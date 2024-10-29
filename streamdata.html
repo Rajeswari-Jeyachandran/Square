@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Text Areas</title>
+  <script src="https://cdn.jsdelivr.net/npm/rxjs@7.5.7/dist/bundles/rxjs.umd.min.js"></script>
+</head>
+<body>
+  <textarea id="textArea1" rows="10" cols="50"></textarea>
+  <textarea id="textArea2" rows="10" cols="50" readonly></textarea>
+  <button id="click-me">Type it!</button>
+  <div id="typing-area"></div>
+  <script>
+    const { interval, from } = rxjs;
+    const { map, takeWhile } = rxjs.operators;
+
+    document.getElementById('click-me').addEventListener('click', () => {
+      const textArea1 = document.getElementById('textArea1');
+      const textArea2 = document.getElementById('textArea2');
+      const typingArea = document.getElementById('typing-area');
+      textArea2.value = '';
+      const text = textArea1.value;
+
+      const textStream$ = interval(50).pipe(
+        map((index) => text[index]),
+        takeWhile((char) => char !== undefined)
+      );
+
+      textStream$.subscribe({
+        next: (char) => {
+          textArea2.value += char;
+        },
+      });
+    });
+  </script>
+</body>
+</html>
